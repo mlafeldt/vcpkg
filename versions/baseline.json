@@ -3672,6 +3672,10 @@
       "baseline": "2020-09-14",
       "port-version": 5
     },
+    "ion-c": {
+      "baseline": "1.1.2",
+      "port-version": 0
+    },
     "iowa-hills-dsp": {
       "baseline": "0.1.0",
       "port-version": 0

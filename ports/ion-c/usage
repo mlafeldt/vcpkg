@@ -1,0 +1,11 @@
+ion-c is compatible with built-in CMake targets:
+
+  find_package(IonC CONFIG REQUIRED)
+
+  add_definitions(-DDECNUMDIGITS=34)
+
+  target_link_libraries(main PRIVATE IonC::ionc)
+
+For static linking:
+
+  target_link_libraries(main PRIVATE IonC::ionc_static IonC::decNumber_static)
