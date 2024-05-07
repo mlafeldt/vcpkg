@@ -3673,7 +3673,7 @@
       "port-version": 5
     },
     "ion-c": {
-      "baseline": "1.1.2",
+      "baseline": "1.1.2+20240213",
       "port-version": 0
     },
     "iowa-hills-dsp": {

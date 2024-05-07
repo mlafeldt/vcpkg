@@ -1,14 +1,16 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO amazon-ion/ion-c
-    REF "v${VERSION}"
-    SHA512 3a77769368b4903934f02811ad7c3ec2fb13d8e2e36c2c6d65879e8eb9f846135d3c7038f6e31750c08755a7d1989b3dca114a0edb58a323d434b438cb90a9ab
+    REF e5fb7555981b52fdc1d99d01b94ad766b01ebdee
+    SHA512 4380539c650882d3a901e730bfc33a959841ae1add9c83bfebdbb5032f1cd2ba3c9055ceb9a2e260c9e9f24adfae308d19890ebfc946176aa3a4107e8db3c023
     HEAD_REF master
-    PATCHES remove-tests-and-tools.patch
+    PATCHES fix-cmake.patch
 )
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
+    OPTIONS
+	-DIONC_BUILD_TESTS=OFF
 )
 
 vcpkg_cmake_install()

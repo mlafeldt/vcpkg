@@ -1,0 +1,89 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0737d7f..02d1c66 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -23,20 +23,6 @@ set(IONC_ENABLE_VERBOSE_DEBUG OFF CACHE BOOL "Enable verbose logging for ion-c")
+ if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_compile_definitions(NDEBUG=1)
+ elseif (CMAKE_BUILD_TYPE STREQUAL "Debug")
+-   include(CheckCXXCompilerFlag)
+-   # check_cxx_compiler_flag doesn't just check compiler flags, it also attempts to link the program, which
+-   # in this case, also requires sanitizer flags. So we have to abuse CMAKE_REQUIRED_LINK_OPTIONS since that's
+-   # the only lever we're given afaict. This does not work with cmake prior to 3.14.
+-   list(INSERT CMAKE_REQUIRED_LINK_OPTIONS 0 "-fsanitize=address,undefined")
+-   check_cxx_compiler_flag("-g -fsanitize=address,undefined -fno-omit-frame-pointer" UBISAN_OK)
+-   list(REMOVE_AT CMAKE_REQUIRED_LINK_OPTIONS 0)
+-   if (UBISAN_OK OR IONC_FORCE_SANITIZERS)
+-      add_compile_options(
+-         -fsanitize=address,undefined
+-         -fsanitize-recover=address
+-      )
+-      add_link_options(-fsanitize=address,undefined -fsanitize-recover=address)
+-   endif()
+    add_compile_options(-g -fno-omit-frame-pointer -fno-optimize-sibling-calls)
+    if (IONC_ENABLE_VERBOSE_DEBUG)
+        add_compile_definitions(DEBUG=1)
+@@ -54,14 +40,6 @@ endif()
+ 
+ ## ion-c Build Version
+ set(IONC_FULL_VERSION ${CMAKE_PROJECT_VERSION})
+-find_program(GIT_EXECUTABLE "git")
+-add_custom_target(
+-   version
+-   ${CMAKE_COMMAND} -D SRC=${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.in
+-                    -D DST=${CMAKE_CURRENT_BINARY_DIR}/build_version.h
+-                    -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
+-                    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/VersionHeader.cmake
+-)
+ 
+ include(GNUInstallDirs)
+ 
+@@ -107,7 +85,6 @@ add_custom_target(uninstall
+ 
+ add_subdirectory(decNumber)
+ add_subdirectory(ionc)
+-add_subdirectory(tools)
+ if (IONC_BUILD_TESTS)
+    if (NOT TARGET gtest_main)
+       message("Using included google-test")
+diff --git a/ionc/CMakeLists.txt b/ionc/CMakeLists.txt
+index be80b31..1406863 100644
+--- a/ionc/CMakeLists.txt
++++ b/ionc/CMakeLists.txt
+@@ -25,7 +25,6 @@ set(libsrc
+         ion_decimal.c
+         ion_float.c
+         ion_extractor.c
+-        ion_version.c
+         )
+ 
+ set(LIB_PUB_HEADERS 
+@@ -46,7 +45,6 @@ set(LIB_PUB_HEADERS
+     include/ionc/ion_symbol_table.h
+     include/ionc/ion_timestamp.h
+     include/ionc/ion_types.h
+-    include/ionc/ion_version.h
+     include/ionc/ion_writer.h)
+ 
+ 
+@@ -70,9 +68,6 @@ target_include_directories(objlib
+             ${CMAKE_CURRENT_BINARY_DIR}/../
+ )
+ 
+-add_dependencies(objlib version)
+-
+-
+ if (MSVC)
+   add_library(ionc $<TARGET_OBJECTS:objlib>) 
+ else()
+diff --git a/ionc/include/ionc/ion.h b/ionc/include/ionc/ion.h
+index adcdee8..d947f7a 100644
+--- a/ionc/include/ionc/ion.h
++++ b/ionc/include/ionc/ion.h
+@@ -34,6 +34,5 @@
+ #include "ion_writer.h"
+ #include "ion_catalog.h"
+ #include "ion_debug.h"
+-#include "ion_version.h"
+ 
+ #endif
