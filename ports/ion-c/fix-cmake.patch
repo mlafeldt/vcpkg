@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0737d7f..02d1c66 100644
+index 0737d7f..2ef36c3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -23,20 +23,6 @@ set(IONC_ENABLE_VERBOSE_DEBUG OFF CACHE BOOL "Enable verbose logging for ion-c")
+@@ -23,21 +23,6 @@ set(IONC_ENABLE_VERBOSE_DEBUG OFF CACHE BOOL "Enable verbose logging for ion-c")
  if (CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_definitions(NDEBUG=1)
  elseif (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -20,25 +20,28 @@ index 0737d7f..02d1c66 100644
 -      )
 -      add_link_options(-fsanitize=address,undefined -fsanitize-recover=address)
 -   endif()
-    add_compile_options(-g -fno-omit-frame-pointer -fno-optimize-sibling-calls)
+-   add_compile_options(-g -fno-omit-frame-pointer -fno-optimize-sibling-calls)
     if (IONC_ENABLE_VERBOSE_DEBUG)
         add_compile_definitions(DEBUG=1)
-@@ -54,14 +40,6 @@ endif()
+    endif()
+@@ -53,13 +38,13 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Profiling")
+ endif()
  
  ## ion-c Build Version
- set(IONC_FULL_VERSION ${CMAKE_PROJECT_VERSION})
+-set(IONC_FULL_VERSION ${CMAKE_PROJECT_VERSION})
 -find_program(GIT_EXECUTABLE "git")
--add_custom_target(
--   version
--   ${CMAKE_COMMAND} -D SRC=${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.in
--                    -D DST=${CMAKE_CURRENT_BINARY_DIR}/build_version.h
++option(IONC_BUILD_REF "Git build ref" "n/a")
+ add_custom_target(
+    version
+    ${CMAKE_COMMAND} -D SRC=${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.in
+                     -D DST=${CMAKE_CURRENT_BINARY_DIR}/build_version.h
 -                    -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
--                    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/VersionHeader.cmake
--)
++                    -D IONC_FULL_VERSION=${CMAKE_PROJECT_VERSION}
++                    -D IONC_GIT_REF=${IONC_GIT_REF}
+                     -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/VersionHeader.cmake
+ )
  
- include(GNUInstallDirs)
- 
-@@ -107,7 +85,6 @@ add_custom_target(uninstall
+@@ -107,7 +92,6 @@ add_custom_target(uninstall
  
  add_subdirectory(decNumber)
  add_subdirectory(ionc)
@@ -46,44 +49,33 @@ index 0737d7f..02d1c66 100644
  if (IONC_BUILD_TESTS)
     if (NOT TARGET gtest_main)
        message("Using included google-test")
-diff --git a/ionc/CMakeLists.txt b/ionc/CMakeLists.txt
-index be80b31..1406863 100644
---- a/ionc/CMakeLists.txt
-+++ b/ionc/CMakeLists.txt
-@@ -25,7 +25,6 @@ set(libsrc
-         ion_decimal.c
-         ion_float.c
-         ion_extractor.c
--        ion_version.c
-         )
- 
- set(LIB_PUB_HEADERS 
-@@ -46,7 +45,6 @@ set(LIB_PUB_HEADERS
-     include/ionc/ion_symbol_table.h
-     include/ionc/ion_timestamp.h
-     include/ionc/ion_types.h
--    include/ionc/ion_version.h
-     include/ionc/ion_writer.h)
- 
- 
-@@ -70,9 +68,6 @@ target_include_directories(objlib
-             ${CMAKE_CURRENT_BINARY_DIR}/../
- )
- 
--add_dependencies(objlib version)
+diff --git a/cmake/VersionHeader.cmake b/cmake/VersionHeader.cmake
+index 2bdcd36..33e0045 100644
+--- a/cmake/VersionHeader.cmake
++++ b/cmake/VersionHeader.cmake
+@@ -1,23 +1,8 @@
+-set(IONC_FULL_VERSION "${CMAKE_PROJECT_VERSION}")
+-if (GIT_EXECUTABLE)
+-   execute_process(
+-      COMMAND ${GIT_EXECUTABLE} describe --long --tags --dirty --match "v*"
+-      OUTPUT_VARIABLE GIT_DESCRIBE_OUTPUT
+-      RESULT_VARIABLE GIT_DESCRIBE_ERROR
+-      OUTPUT_STRIP_TRAILING_WHITESPACE
+-      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+-   )
+-   if (NOT GIT_DESCRIBE_ERROR)
+-      # Describe output will be in the form v<version>-<commits>-g<hash>[-dirty]
+-      set(IONC_FULL_VERSION ${GIT_DESCRIBE_OUTPUT})
+-   endif()
+-endif()
 -
--
- if (MSVC)
-   add_library(ionc $<TARGET_OBJECTS:objlib>) 
- else()
-diff --git a/ionc/include/ionc/ion.h b/ionc/include/ionc/ion.h
-index adcdee8..d947f7a 100644
---- a/ionc/include/ionc/ion.h
-+++ b/ionc/include/ionc/ion.h
-@@ -34,6 +34,5 @@
- #include "ion_writer.h"
- #include "ion_catalog.h"
- #include "ion_debug.h"
--#include "ion_version.h"
+-string(REGEX MATCH "^v([0-9]+)\\.([0-9]+)\\.([0-9]+)-[0-9]+-g([a-zA-Z0-9-]+)$" IONC_FULL_VERSION_MATCH "${IONC_FULL_VERSION}")
++string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$" IONC_FULL_VERSION_MATCH "${IONC_FULL_VERSION}")
+ set(IONC_VERSION_MAJOR ${CMAKE_MATCH_1})
+ set(IONC_VERSION_MINOR ${CMAKE_MATCH_2})
+ set(IONC_VERSION_PATCH ${CMAKE_MATCH_3})
+-set(IONC_VERSION_HASH ${CMAKE_MATCH_4})
++set(IONC_VERSION_HASH ${IONC_GIT_REF})
+ set(IONC_VERSION "v${IONC_VERSION_MAJOR}.${IONC_VERSION_MINOR}.${IONC_VERSION_PATCH}")
  
- #endif
+ configure_file(${SRC} ${DST} @ONLY)
