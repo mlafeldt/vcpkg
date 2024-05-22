@@ -79,3 +79,18 @@ index 2bdcd36..33e0045 100644
  set(IONC_VERSION "v${IONC_VERSION_MAJOR}.${IONC_VERSION_MINOR}.${IONC_VERSION_PATCH}")
  
  configure_file(${SRC} ${DST} @ONLY)
+diff --git a/ionc/ion_initialize.c b/ionc/ion_initialize.c
+index f226d37..5a52e99 100644
+--- a/ionc/ion_initialize.c
++++ b/ionc/ion_initialize.c
+@@ -20,10 +20,3 @@
+ 
+ #define   ION_INIT
+ #include "ion_internal.h"
+-
+-void ion_init(void)
+-{
+-    /* do nothing */
+-    return;
+-}
+-
