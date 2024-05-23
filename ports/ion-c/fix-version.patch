@@ -1,30 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0737d7f..2ef36c3 100644
+index a5add16..1c7bb4d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -23,21 +23,6 @@ set(IONC_ENABLE_VERBOSE_DEBUG OFF CACHE BOOL "Enable verbose logging for ion-c")
- if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_compile_definitions(NDEBUG=1)
- elseif (CMAKE_BUILD_TYPE STREQUAL "Debug")
--   include(CheckCXXCompilerFlag)
--   # check_cxx_compiler_flag doesn't just check compiler flags, it also attempts to link the program, which
--   # in this case, also requires sanitizer flags. So we have to abuse CMAKE_REQUIRED_LINK_OPTIONS since that's
--   # the only lever we're given afaict. This does not work with cmake prior to 3.14.
--   list(INSERT CMAKE_REQUIRED_LINK_OPTIONS 0 "-fsanitize=address,undefined")
--   check_cxx_compiler_flag("-g -fsanitize=address,undefined -fno-omit-frame-pointer" UBISAN_OK)
--   list(REMOVE_AT CMAKE_REQUIRED_LINK_OPTIONS 0)
--   if (UBISAN_OK OR IONC_FORCE_SANITIZERS)
--      add_compile_options(
--         -fsanitize=address,undefined
--         -fsanitize-recover=address
--      )
--      add_link_options(-fsanitize=address,undefined -fsanitize-recover=address)
--   endif()
--   add_compile_options(-g -fno-omit-frame-pointer -fno-optimize-sibling-calls)
-    if (IONC_ENABLE_VERBOSE_DEBUG)
-        add_compile_definitions(DEBUG=1)
-    endif()
-@@ -53,13 +38,13 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Profiling")
+@@ -38,13 +38,13 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Profiling")
  endif()
  
  ## ion-c Build Version
@@ -41,14 +19,6 @@ index 0737d7f..2ef36c3 100644
                      -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/VersionHeader.cmake
  )
  
-@@ -107,7 +92,6 @@ add_custom_target(uninstall
- 
- add_subdirectory(decNumber)
- add_subdirectory(ionc)
--add_subdirectory(tools)
- if (IONC_BUILD_TESTS)
-    if (NOT TARGET gtest_main)
-       message("Using included google-test")
 diff --git a/cmake/VersionHeader.cmake b/cmake/VersionHeader.cmake
 index 2bdcd36..33e0045 100644
 --- a/cmake/VersionHeader.cmake
@@ -79,18 +49,3 @@ index 2bdcd36..33e0045 100644
  set(IONC_VERSION "v${IONC_VERSION_MAJOR}.${IONC_VERSION_MINOR}.${IONC_VERSION_PATCH}")
  
  configure_file(${SRC} ${DST} @ONLY)
-diff --git a/ionc/ion_initialize.c b/ionc/ion_initialize.c
-index f226d37..5a52e99 100644
---- a/ionc/ion_initialize.c
-+++ b/ionc/ion_initialize.c
-@@ -20,10 +20,3 @@
- 
- #define   ION_INIT
- #include "ion_internal.h"
--
--void ion_init(void)
--{
--    /* do nothing */
--    return;
--}
--

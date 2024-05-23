@@ -6,14 +6,17 @@ vcpkg_from_github(
     REF "${IONC_GIT_REF}"
     SHA512 4380539c650882d3a901e730bfc33a959841ae1add9c83bfebdbb5032f1cd2ba3c9055ceb9a2e260c9e9f24adfae308d19890ebfc946176aa3a4107e8db3c023
     HEAD_REF master
-    PATCHES fix-cmake.patch
+    PATCHES
+        fix-version.patch
+        remove-init.patch
+        disable-sanitizer.patch
 )
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
-	-DIONC_GIT_REF=${IONC_GIT_REF}
-	-DIONC_BUILD_TESTS=OFF
+        -DIONC_GIT_REF=${IONC_GIT_REF}
+        -DIONC_BUILD_TESTS=OFF
 )
 
 vcpkg_cmake_install()

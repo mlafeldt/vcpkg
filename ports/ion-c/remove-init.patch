@@ -1,0 +1,15 @@
+diff --git a/ionc/ion_initialize.c b/ionc/ion_initialize.c
+index f226d37..5a52e99 100644
+--- a/ionc/ion_initialize.c
++++ b/ionc/ion_initialize.c
+@@ -20,10 +20,3 @@
+ 
+ #define   ION_INIT
+ #include "ion_internal.h"
+-
+-void ion_init(void)
+-{
+-    /* do nothing */
+-    return;
+-}
+-
