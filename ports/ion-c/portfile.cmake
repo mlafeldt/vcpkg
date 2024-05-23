@@ -7,9 +7,10 @@ vcpkg_from_github(
     SHA512 4380539c650882d3a901e730bfc33a959841ae1add9c83bfebdbb5032f1cd2ba3c9055ceb9a2e260c9e9f24adfae308d19890ebfc946176aa3a4107e8db3c023
     HEAD_REF master
     PATCHES
+        disable-sanitizer.patch
         fix-version.patch
         remove-init.patch
-        disable-sanitizer.patch
+        remove-tools.patch
 )
 
 vcpkg_cmake_configure(

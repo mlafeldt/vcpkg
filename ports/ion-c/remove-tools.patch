@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1c7bb4d..2ef36c3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -92,7 +92,6 @@ add_custom_target(uninstall
+ 
+ add_subdirectory(decNumber)
+ add_subdirectory(ionc)
+-add_subdirectory(tools)
+ if (IONC_BUILD_TESTS)
+    if (NOT TARGET gtest_main)
+       message("Using included google-test")
