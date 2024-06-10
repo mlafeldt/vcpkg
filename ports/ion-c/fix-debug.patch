@@ -1,0 +1,34 @@
+diff --git a/ionc/include/ionc/ion_debug.h b/ionc/include/ionc/ion_debug.h
+index 8e81398..9464d6e 100644
+--- a/ionc/include/ionc/ion_debug.h
++++ b/ionc/include/ionc/ion_debug.h
+@@ -24,6 +24,11 @@
+ extern "C" {
+ #endif
+ 
++// XXX: declarations copied from ion_helpers.h (can't be included?) to fix debug builds
++ION_API_EXPORT void ion_helper_breakpoint(void);
++ION_API_EXPORT long ion_helper_enter(const char *filename, int line_number, long count);
++ION_API_EXPORT iERR ion_helper_return(const char *filename, int line_number, long count, iERR err);
++
+ //
+ // support routines for error handling
+ //
+@@ -46,7 +51,7 @@ extern "C" {
+      #ifndef __func__
+       #define __location_name__ __file__
+       #define __location_display_name__ ion_helper_short_filename(__file__)
+-      #define ENTER_FILE      static /*const*/ char *__file__ = __FILE__
++      #define ENTER_FILE      static const char *__file__ = __FILE__
+      #else
+       #define __location_name__ __func__
+       #define __location_display_name__ __func__
+@@ -55,7 +60,7 @@ extern "C" {
+     #define FN_DEF            static long __count__ = 0; \
+                               ENTER_FILE;  \
+                               /* static const*/ int __line__ = __LINE__; \
+-                              long __temp__ = ENTER(__file__, __line__, __count__);
++                              ENTER(__file__, __line__, __count__);
+ #else
+     #define DEBUG_ERR(x)      /* nothing */
+     #define DEBUG_ERRMSG(x,m) /* nothing */

@@ -8,6 +8,7 @@ vcpkg_from_github(
     HEAD_REF master
     PATCHES
         disable-sanitizer.patch
+        fix-debug.patch
         fix-version.patch
         remove-init.patch
         remove-tools.patch
